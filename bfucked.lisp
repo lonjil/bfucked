@@ -2,8 +2,6 @@
 
 (in-package #:bfucked)
 
-; iptr
-
 (defconstant +plus+ '('((incf (aref data pos)))))
 (defconstant +minus+ '('((decf (aref data pos)))))
 (defconstant +right+ '('((incf pos))))
