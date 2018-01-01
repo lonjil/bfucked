@@ -2,8 +2,10 @@
 
 (in-package #:bfucked)
 
-(defvar *plus* '('((setf (aref data pos) (ldb (byte 8 0) (1+ (aref data pos)))))))
-(defvar *minus* '('((setf (aref data pos) (ldb (byte 8 0) (1- (aref data pos)))))))
+(defvar *plus* '('((setf (aref data pos)
+                    (ldb (byte 8 0) (1+ (aref data pos)))))))
+(defvar *minus* '('((setf (aref data pos)
+                     (ldb (byte 8 0) (1- (aref data pos)))))))
 (defvar *right* '('((incf pos))))
 (defvar *left* '('((decf pos))))
 (defvar *stop* '('((princ (code-char (aref data pos))))))
@@ -19,7 +21,8 @@
                         (c (pop stack)))
                     `((go ,s)
                       ,c))))
-(defvar *debug* '('((loop for i from (- pos 3) to (+ pos 3) do (format t "~a~%" (aref data i))))))
+(defvar *debug* '('((loop :for i :from (- pos 3) :to (+ pos 3)
+                          :do (format t "~a~%" (aref data i))))))
 
 (defmacro mkcompiler ()
   `(defun bfcompile (str)
@@ -45,7 +48,8 @@
                                       :until (and (char= char #\!)
                                                   (setf inline-input (1+ i)))
        (if inline-input
-           `(with-input-from-string (*standard-input* ,(subseq str inline-input))
+           `(with-input-from-string (*standard-input*
+                                     ,(subseq str inline-input))
               ,compiled)
            compiled))))
 (mkcompiler)
