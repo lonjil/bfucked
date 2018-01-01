@@ -20,7 +20,6 @@
                     `((go ,s)
                       ,c))))
 (defvar *debug* '('((loop for i from (- pos 3) to (+ pos 3) do (format t "~a~%" (aref data i))))))
-(defvar *input* '((setf inline-input (1+ i)) (return prog)))
 
 (defmacro mkcompiler ()
   `(defun bfcompile (str)
@@ -42,10 +41,9 @@
                                               (#\, ,@*comma*)
                                               (#\[ ,@*open*)
                                               (#\] ,@*close*)
-                                              (#\! ,@*input*)
                                               (#\% ,@*debug*))
-                                      :into prog
-                                    :finally (return prog))))))
+                                      :until (and (char= char #\!)
+                                                  (setf inline-input (1+ i)))
        (if inline-input
            `(with-input-from-string (*standard-input* ,(subseq str inline-input))
               ,compiled)
