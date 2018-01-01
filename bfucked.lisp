@@ -26,15 +26,21 @@
 
 (defmacro mkcompiler ()
   `(defun bfcompile (str)
+     (declare (type simple-string str)
+              (optimize (speed 3)))
      (let* ((inline-input nil)
             (stack (list))
             (compiled `(let ((pos 30000)
                              (data (make-array 60000
                                                :element-type '(unsigned-byte 8)
                                                :initial-element 0)))
+                         (declare (type fixnum pos)
+                                  (optimize (speed 3) (safety 0) (debug 0)))
                          (tagbody
                             ,@(loop :for char :across str
-                                    :for i :from 0
+                                    :for i :of-type fixnum :from 0
+                                    :until (and (char= char #\!)
+                                                (setf inline-input (1+ i)))
                                     :append (switch (char)
                                               (#\+ ,@*plus*)
                                               (#\- ,@*minus*)
@@ -44,9 +50,8 @@
                                               (#\, ,@*comma*)
                                               (#\[ ,@*open*)
                                               (#\] ,@*close*)
-                                              (#\% ,@*debug*))
-                                      :until (and (char= char #\!)
-                                                  (setf inline-input (1+ i)))
+                                              (#\% ,@*debug*)))))))
+       (declare (type (or null fixnum) inline-input))
        (if inline-input
            `(with-input-from-string (*standard-input*
                                      ,(subseq str inline-input))
